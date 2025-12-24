@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LayoutDashboard, BookOpen, Palette, Settings, Briefcase, MousePointerClick, Languages, Database, AppWindow, Sliders, Zap } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Palette, Settings, Briefcase, MousePointerClick, Languages, Database, AppWindow, Sliders, Zap, Download, Upload } from 'lucide-react';
 import { AppView, SettingSectionId } from '../types';
 import { Logo } from './Logo';
 
@@ -9,9 +9,11 @@ interface SidebarProps {
   onViewChange: (view: AppView) => void;
   onSettingScroll: (id: SettingSectionId) => void;
   activeSettingSection: SettingSectionId | null;
+  onExportConfig: () => void;
+  onImportConfig: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onSettingScroll, activeSettingSection }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onSettingScroll, activeSettingSection, onExportConfig, onImportConfig }) => {
   
   const mainNav = [
     { id: 'dashboard', label: '仪表盘', icon: LayoutDashboard },
@@ -31,12 +33,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onS
 
   return (
     <div className="w-64 bg-slate-900 text-slate-100 h-screen flex flex-col fixed left-0 top-0 overflow-y-auto z-50 shadow-xl">
-      <div className="px-6 pt-8 pb-6">
+      <div className="px-6 pt-8 pb-6 space-y-4 border-b border-slate-800">
         {/* Pass text-white to ensure 'Re' appears white on dark background */}
         <Logo className="w-10 h-10 shadow-lg" textClassName="text-white" />
+        
+        {/* Config Import/Export Actions */}
+        <div className="flex gap-2">
+            <button 
+                onClick={onExportConfig} 
+                className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white py-2 rounded-lg text-xs font-bold transition-all border border-slate-700/50 hover:border-slate-600 shadow-sm" 
+                title="导出所有配置和词库备份"
+            >
+                <Download className="w-3.5 h-3.5" /> 备份
+            </button>
+            <button 
+                onClick={onImportConfig} 
+                className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white py-2 rounded-lg text-xs font-bold transition-all border border-slate-700/50 hover:border-slate-600 shadow-sm" 
+                title="从备份文件恢复配置"
+            >
+                <Upload className="w-3.5 h-3.5" /> 恢复
+            </button>
+        </div>
       </div>
 
-      <nav className="flex-1 px-3 space-y-6">
+      <nav className="flex-1 px-3 space-y-6 pt-6">
         {/* Main Views */}
         <div className="space-y-1">
           {mainNav.map((item) => (
