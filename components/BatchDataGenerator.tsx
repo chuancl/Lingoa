@@ -6,7 +6,7 @@ import {
     Eraser, LayoutGrid, FileJson, CheckSquare, Square, Plus, 
     CheckCircle, BookOpen, GraduationCap, Loader2, FileUp, Eye,
     UploadCloud, DownloadCloud, Scale, Image as ImageIcon, Video,
-    Quote, Globe, Star, Info, GripVertical, FileDown
+    Quote, Globe, Star, Info, GripVertical, FileDown, BarChart2, Youtube, ExternalLink
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { Toast, ToastMessage } from './ui/Toast';
@@ -604,41 +604,156 @@ export const BatchDataGenerator: React.FC = () => {
                                         <button onClick={() => setSelectedPreviewIds(selectedPreviewIds.size === previewResult.length ? new Set() : new Set(previewResult.map((_, i) => i)))} className="flex items-center gap-1 hover:text-slate-700">{selectedPreviewIds.size === previewResult.length ? <CheckSquare className="w-4 h-4 text-blue-600"/> : <Square className="w-4 h-4"/>} 全选/取消</button>
                                     </div>
                                     {previewResult.map((item, idx) => (
-                                        <div key={idx} className={`bg-white p-5 rounded-2xl border transition-all flex gap-4 ${selectedPreviewIds.has(idx) ? 'border-blue-500 ring-1 ring-blue-100 shadow-md' : 'border-slate-200 hover:border-slate-300'}`}>
-                                            <button onClick={() => {const n = new Set(selectedPreviewIds); if(n.has(idx)) n.delete(idx); else n.add(idx); setSelectedPreviewIds(n);}}>
-                                                {selectedPreviewIds.has(idx) ? <CheckSquare className="w-5 h-5 text-blue-600"/> : <Square className="w-5 h-5 text-slate-300"/>}
-                                            </button>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <div className="flex items-center gap-3">
-                                                        <h4 className="text-xl font-black text-slate-900 leading-none">{item.text}</h4>
-                                                        <span className="text-xs text-slate-400 font-mono">{item.phoneticUs || item.phoneticUk}</span>
+                                        <div key={idx} className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all p-5 flex gap-4 group ${selectedPreviewIds.has(idx) ? 'border-blue-400 ring-1 ring-blue-100 shadow-md' : 'border-slate-200'}`}>
+                                            <div className="pt-1.5">
+                                                <button onClick={() => {const n = new Set(selectedPreviewIds); if(n.has(idx)) n.delete(idx); else n.add(idx); setSelectedPreviewIds(n);}}>
+                                                    {selectedPreviewIds.has(idx) ? <CheckSquare className="w-5 h-5 text-blue-600"/> : <Square className="w-5 h-5 text-slate-300"/>}
+                                                </button>
+                                            </div>
+                                            <div className="flex-1 space-y-4 min-w-0">
+                                                {/* Header Row */}
+                                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                                    <div className="flex items-center gap-3 flex-wrap">
+                                                        <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{item.text}</h3>
+                                                        
+                                                        {item.partOfSpeech && (
+                                                            <span className="font-serif font-bold text-sm text-slate-400 bg-slate-50 rounded px-1.5 py-0.5 border border-slate-100">{item.partOfSpeech}</span>
+                                                        )}
+
+                                                        {(item.phoneticUs || item.phoneticUk) && (
+                                                            <div className="flex items-center text-sm text-slate-500 space-x-3 font-mono bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
+                                                                {item.phoneticUs && <span><span className="text-[10px] mr-1 text-slate-400 font-sans">US</span> {item.phoneticUs}</span>}
+                                                                {item.phoneticUk && <span><span className="text-[10px] mr-1 text-slate-400 font-sans">UK</span> {item.phoneticUk}</span>}
+                                                            </div>
+                                                        )}
+                                                        
+                                                        {item.translation && (
+                                                            <div className="text-slate-700 font-medium px-3 py-1 bg-amber-50 text-amber-900 rounded-lg border border-amber-100 text-sm">
+                                                                {item.translation}
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    <div className="bg-amber-50 text-amber-700 px-3 py-1 rounded-lg text-xs font-bold border border-amber-100 truncate max-w-[400px]">{item.translation}</div>
+
+                                                    <div className="ml-auto sm:ml-0 self-start sm:self-center flex flex-col items-end gap-1.5">
+                                                        {item.tags && item.tags.length > 0 && (
+                                                            <div className="flex flex-wrap gap-1 justify-end">
+                                                                {item.tags.map((t: string, i: number) => <span key={i} className="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded border border-blue-100 whitespace-nowrap">{t}</span>)}
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-3 text-xs text-slate-400">
+                                                            {item.importance && (
+                                                                <div className="flex" title={`Collins Level ${item.importance}`}>
+                                                                    {[...Array(5)].map((_, i) => (
+                                                                        <Star key={i} className={`w-3 h-3 ${i < item.importance ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                            {item.cocaRank && (
+                                                                <span className="flex items-center" title="COCA 词频排名"><BarChart2 className="w-3 h-3 mr-1"/> #{item.cocaRank}</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center gap-3 text-[10px] text-slate-400 font-bold mb-3">
-                                                    {item.importance && <div className="flex text-amber-400">{'★'.repeat(item.importance)} <span className="ml-1 text-slate-300">(Collins)</span></div>}
-                                                    {item.partOfSpeech && <span className="italic text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{item.partOfSpeech}</span>}
-                                                    {item.cocaRank && <span>COCA #{item.cocaRank}</span>}
-                                                </div>
-                                                <div className="space-y-2">
-                                                    {(item.dictionaryExample || item.contextSentence) && (
-                                                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                                            <p className="text-sm text-slate-700 leading-relaxed italic">{item.dictionaryExample || item.contextSentence}</p>
-                                                            <p className="text-xs text-slate-400 mt-1">{item.dictionaryExampleTranslation || item.contextSentenceTranslation}</p>
+
+                                                {/* Media Row: Image & Video */}
+                                                {(item.image || item.video) && (
+                                                    <div className="flex gap-4">
+                                                        {item.image && (
+                                                            <div className="w-16 h-16 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center relative group/img">
+                                                                <img src={item.image} className="w-full h-full object-cover" />
+                                                                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover/img:opacity-100 transition flex items-center justify-center"><ImageIcon className="w-4 h-4 text-white drop-shadow-md"/></div>
+                                                            </div>
+                                                        )}
+                                                        {item.video && (
+                                                            <a href={item.video.url} target="_blank" className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-2 pr-4 hover:bg-slate-100 transition group/vid max-w-xs">
+                                                                <div className="w-12 h-12 rounded bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden relative">
+                                                                    {item.video.cover && <img src={item.video.cover} className="absolute inset-0 w-full h-full object-cover opacity-60"/>}
+                                                                    <Youtube className="w-5 h-5 text-red-500 relative z-10"/>
+                                                                </div>
+                                                                <div className="min-w-0">
+                                                                    <div className="text-xs font-bold text-slate-700 truncate">{item.video.title}</div>
+                                                                    <div className="text-[10px] text-slate-400">视频讲解</div>
+                                                                </div>
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {/* Details Grid */}
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    {item.inflections && item.inflections.length > 0 && (
+                                                        <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-100 relative">
+                                                            <div className="absolute left-0 top-3 w-1 h-8 bg-orange-400 rounded-r"></div>
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5 pl-2">词态变化 (Morphology)</span>
+                                                            <div className="flex flex-wrap gap-2 pl-2">
+                                                                {item.inflections.map((inf: string, i: number) => <span key={i} className="text-xs px-2 py-1 bg-white border border-slate-200 rounded text-slate-600 font-mono">{inf}</span>)}
+                                                            </div>
                                                         </div>
                                                     )}
+                                                    
+                                                    {item.phrases && item.phrases.length > 0 && (
+                                                        <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-100 relative">
+                                                            <div className="absolute left-0 top-3 w-1 h-8 bg-indigo-500 rounded-r"></div>
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5 pl-2">常用短语 (Phrases)</span>
+                                                            <div className="flex flex-wrap gap-2 pl-2">
+                                                                {item.phrases.map((p: string, i: number) => <span key={i} className="text-xs px-2 py-1 bg-white border border-slate-200 rounded text-slate-600">{p}</span>)}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {item.roots && item.roots.length > 0 && (
+                                                        <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-100 relative">
+                                                            <div className="absolute left-0 top-3 w-1 h-8 bg-rose-500 rounded-r"></div>
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5 pl-2">词根词缀 (Roots)</span>
+                                                            <div className="flex flex-wrap gap-2 pl-2">
+                                                                {item.roots.map((r: string, i: number) => <span key={i} className="text-xs px-2 py-1 bg-white border border-slate-200 rounded text-slate-600">{r}</span>)}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {item.synonyms && item.synonyms.length > 0 && (
+                                                        <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-100 relative">
+                                                            <div className="absolute left-0 top-3 w-1 h-8 bg-cyan-500 rounded-r"></div>
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5 pl-2">近义词 (Synonyms)</span>
+                                                            <div className="flex flex-wrap gap-2 pl-2">
+                                                                {item.synonyms.map((s: string, i: number) => <span key={i} className="text-xs px-2 py-1 bg-white border border-slate-200 rounded text-slate-600">{s}</span>)}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Context Sentence */}
+                                                    {item.contextSentence && (
+                                                        <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-100 relative group/ctx hover:bg-slate-100 transition">
+                                                            <div className="absolute left-0 top-3 w-1 h-8 bg-blue-500 rounded-r"></div>
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5 pl-2">来源原句 (Context)</span>
+                                                            <p className="text-sm text-slate-700 leading-relaxed pl-2 mb-1">{item.contextSentence}</p>
+                                                            {item.contextSentenceTranslation && <p className="text-xs text-slate-500 pl-2">{item.contextSentenceTranslation}</p>}
+                                                            {item.sourceUrl && (
+                                                                <div className="pl-2 mt-2 pt-2 border-t border-slate-200/50 flex items-center gap-3">
+                                                                    <a href={item.sourceUrl} target="_blank" className="flex items-center text-xs text-blue-600 hover:underline"><ExternalLink className="w-3 h-3 mr-1" /> 来源</a>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Mixed Sentence */}
                                                     {item.mixedSentence && (
-                                                        <div className="bg-purple-50/50 p-3 rounded-xl border border-purple-100">
-                                                            <span className="text-[10px] text-purple-400 font-black uppercase block mb-1">中英混合预览</span>
-                                                            <p className="text-sm text-purple-900">{item.mixedSentence}</p>
+                                                        <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-100 relative hover:bg-slate-100 transition">
+                                                            <div className="absolute left-0 top-3 w-1 h-8 bg-purple-500 rounded-r"></div>
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5 pl-2">中英混合 (Mixed)</span>
+                                                            <p className="text-sm text-slate-700 leading-relaxed pl-2">{item.mixedSentence}</p>
                                                         </div>
                                                     )}
-                                                    <div className="flex flex-wrap gap-2 pt-1">
-                                                        {item.image && <div className="flex items-center gap-1 text-[10px] text-blue-500 bg-blue-50 px-2 py-1 rounded-md border border-blue-100"><ImageIcon className="w-3 h-3"/> 图片已映射</div>}
-                                                        {item.video && <div className="flex items-center gap-1 text-[10px] text-red-500 bg-red-50 px-2 py-1 rounded-md border border-red-100"><Video className="w-3 h-3"/> 视频已映射</div>}
-                                                        {item.sourceUrl && <div className="flex items-center gap-1 text-[10px] text-slate-500 bg-slate-100 px-2 py-1 rounded-md border border-slate-200"><Globe className="w-3 h-3"/> 来源链接</div>}
-                                                    </div>
+
+                                                    {/* Dictionary Example */}
+                                                    {item.dictionaryExample && (
+                                                        <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-100 relative hover:bg-slate-100 transition">
+                                                            <div className="absolute left-0 top-3 w-1 h-8 bg-emerald-500 rounded-r"></div>
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5 pl-2">词典例句 (Dictionary)</span>
+                                                            <p className="text-sm text-slate-600 italic leading-relaxed pl-2 mb-1">{item.dictionaryExample}</p>
+                                                            {item.dictionaryExampleTranslation && <p className="text-xs text-slate-500 pl-2">{item.dictionaryExampleTranslation}</p>}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
